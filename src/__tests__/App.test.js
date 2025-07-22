@@ -4,6 +4,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
@@ -76,7 +77,7 @@ test("deletes the question when the delete button is clicked", async () => {
 });
 
 test("updates the answer when the dropdown is changed", async () => {
-  const { rerender } = render(<App />);
+  const { rerender } = render(<App />); // ✅ Destructure rerender
 
   fireEvent.click(screen.queryByText(/View Questions/));
 
@@ -86,9 +87,17 @@ test("updates the answer when the dropdown is changed", async () => {
     target: { value: "3" },
   });
 
-  expect(screen.queryAllByLabelText(/Correct Answer/)[0].value).toBe("3");
+  // Wait for the DOM to update
+  await waitFor(() =>
+    expect(screen.queryAllByLabelText(/Correct Answer/)[0].value).toBe("3")
+  );
 
+  // Re-render to check if state persists
   rerender(<App />);
 
-  expect(screen.queryAllByLabelText(/Correct Answer/)[0].value).toBe("3");
+  // Wait for DOM update after re-render
+  await waitFor(() =>
+    expect(screen.queryAllByLabelText(/Correct Answer/)[0].value).toBe("3")
+  );
 });
+
