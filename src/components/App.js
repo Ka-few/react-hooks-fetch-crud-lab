@@ -23,11 +23,12 @@ function App() {
   }
 
   function handleUpdateQuestion(updatedQuestion) {
-    const updatedQuestions = questions.map((q) =>
+  setQuestions((prevQuestions) =>
+    prevQuestions.map((q) =>
       q.id === updatedQuestion.id ? updatedQuestion : q
-    );
-    setQuestions(updatedQuestions);
-  }
+    )
+  );
+}
 
   return (
     <main>

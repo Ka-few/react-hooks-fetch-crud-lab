@@ -25,7 +25,7 @@ function QuestionList() {
     setQuestions(updatedQuestions);
   }
 
-  const questionItems = questions.map((q) => (
+  const questionItems = questions.map((q) => ( 
     <QuestionItem
       key={q.id}
       question={q}

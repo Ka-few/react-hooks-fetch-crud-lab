@@ -3,44 +3,33 @@ import React from "react";
 function QuestionItem({ question, onDeleteQuestion, onUpdateQuestion }) {
   const { id, prompt, answers, correctIndex } = question;
 
-  const options = answers.map((answer, index) => (
-    <option key={index} value={index}>
-      {answer}
-    </option>
-  ));
-
   function handleDeleteClick() {
     fetch(`http://localhost:4000/questions/${id}`, {
       method: "DELETE",
-    })
-      .then((r) => {
-        if (r.ok) {
-          onDeleteQuestion(id); // inform parent to update state
-        } else {
-          throw new Error("Failed to delete question");
-        }
-      })
-      .catch((error) => {
-        console.error("Delete error:", error);
-      });
+    }).then(() => onDeleteQuestion(id));
   }
 
   function handleCorrectAnswerChange(e) {
-    const updatedQuestion = {
-      ...question,
-      correctIndex: parseInt(e.target.value),
-    };
+    const updatedIndex = parseInt(e.target.value);
+
+    onUpdateQuestion({ ...question, correctIndex: updatedIndex });
 
     fetch(`http://localhost:4000/questions/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ correctIndex: updatedQuestion.correctIndex }),
+      body: JSON.stringify({ correctIndex: updatedIndex }),
     })
       .then((r) => r.json())
-      .then((updatedData) => onUpdateQuestion(updatedData));
+      .then((updatedQuestion) => onUpdateQuestion(updatedQuestion));
   }
+
+  const answerOptions = answers.map((answer, index) => (
+    <option key={index} value={index}>
+      {answer}
+    </option>
+  ));
 
   return (
     <li>
@@ -51,8 +40,9 @@ function QuestionItem({ question, onDeleteQuestion, onUpdateQuestion }) {
         <select
           value={correctIndex}
           onChange={handleCorrectAnswerChange}
+          aria-label="Correct Answer"
         >
-          {options}
+          {answerOptions}
         </select>
       </label>
       <button onClick={handleDeleteClick}>Delete Question</button>
